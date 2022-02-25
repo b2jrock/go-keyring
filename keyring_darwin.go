@@ -62,6 +62,8 @@ func (k macOSXKeychain) Get(service, username string) (string, error) {
 	return trimStr, nil
 }
 
+/*
+Old set doesn't work well with this encoding
 // Set stores a secret in the keyring given a service name and a user.
 func (k macOSXKeychain) Set(service, username, password string) error {
 	// if the added secret has multiple lines or some non ascii,
@@ -91,10 +93,10 @@ func (k macOSXKeychain) Set(service, username, password string) error {
 	err = cmd.Wait()
 	return err
 }
-
-// SetPlain stores a secret in the keyring without the encoding
+*/
+// Local version of set stores a secret in the keyring without the encoding
 // Useful if the keychain is set through this library but read by others
-func (k macOSXKeychain) SetPlain(service, username, password string) error {
+func (k macOSXKeychain) Set(service, username, password string) error {
 	cmd := exec.Command(execPathKeychain, "-i")
 	stdIn, err := cmd.StdinPipe()
 	if err != nil {
