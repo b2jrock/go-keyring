@@ -1,4 +1,4 @@
-module github.com/zalando/go-keyring
+module github.sie.sony.com/bjohnson/zalando-go-keyring
 
 go 1.13
 

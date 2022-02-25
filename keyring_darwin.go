@@ -92,6 +92,33 @@ func (k macOSXKeychain) Set(service, username, password string) error {
 	return err
 }
 
+// SetPlain stores a secret in the keyring without the encoding
+// Useful if the keychain is set through this library but read by others
+func (k macOSXKeychain) SetPlain(service, username, password string) error {
+	cmd := exec.Command(execPathKeychain, "-i")
+	stdIn, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+
+	command := fmt.Sprintf("add-generic-password -U -s %s -a %s -w %s\n", shellescape.Quote(service), shellescape.Quote(username), shellescape.Quote(password))
+	if _, err := io.WriteString(stdIn, command); err != nil {
+		return err
+	}
+
+	if err = stdIn.Close(); err != nil {
+		return err
+	}
+
+	err = cmd.Wait()
+	return err
+}
+
+// Delete deletes a secret, identified by service & user, from the keyring.
 // Delete deletes a secret, identified by service & user, from the keyring.
 func (k macOSXKeychain) Delete(service, username string) error {
 	out, err := exec.Command(
